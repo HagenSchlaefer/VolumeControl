@@ -65,7 +65,7 @@ void handleVolumeTransition(VolumeLevel lastVolumeLevelState, VolumeLevel curren
 void setup() {
   //inputs
   pinMode(POTI_PIN, INPUT);
-  pinMode(BUSHBUTTON_PIN, INPUT);
+  pinMode(BUSHBUTTON_PIN, INPUT_PULLUP); // Pull-up-Widerstand aktiviert, da Taster gegen GND geschaltet ist
   //outputs
   pinMode(GREEN_LED_PIN, OUTPUT);
   pinMode(YELLOW_LED_PIN, OUTPUT);
@@ -98,11 +98,11 @@ void loop()
   InputDiff inputDiff = diffInput(&currentInputState, &lastInputState);
   if(inputDiff.bushbuttonChanged)
   {
-    // rising Edge
-    if (currentInputState.bushbuttonValue == HIGH)
+    // rising Edge because of pull-up resistor, so LOW means button pressed
+    if (currentInputState.bushbuttonValue == LOW)
     {
-      static int resetState = LOW;
-      resetState  = (resetState  == LOW) ? HIGH : LOW;
+      static int resetState = HIGH; // initial state
+      resetState  = (resetState  == HIGH) ? LOW : HIGH; // toggle state 
       Serial.println("Reset Program: ");
       derivedInitialized = false; // reset derived state initialization
       delay(100);
